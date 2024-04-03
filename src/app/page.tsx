@@ -1,113 +1,156 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import Image from "next/image";
+import { useState } from "react";
+
+// 1. Violation of Single Responsibility Principle (SRP) (Clean Code JavaScript)
+// The App component is responsible for too many things, including rendering the Header, Main, and Footer components,
+// as well as handling state and logic for the entire application.
+// Solution: Refactor the App component to follow the SRP by separating concerns into smaller, more focused components.
+function CarSelector({ cars, onCarSelect }: any) {
+  // 1. no-dupe-else-if (ESLint)
+  // This rule disallows duplicate conditions in if-else-if chains.
+  // Solution: Avoid having duplicate conditions in if-else-if chains.
+  if (cars.length > 0) {
+    // Do something
+  } else if (cars.length === 0) {
+    // Do something
+  } else if (cars.length === 0) {
+    // This condition is a duplicate and should be removed
+  } else {
+    // Do something
+  }
+
+  return (
+    <div>
+      <h1>Select a Car</h1>
+      <div>
+        {/* 2. Lack of Type Safety in JSX (Clean Code JavaScript) */}
+        {/* Solution: Add type annotations for the car object */}
+        {cars.map((car: { make: string; model: string }, index: any) => (
+          <button key={index} onClick={() => onCarSelect(car)}>
+            {car.make} {car.model}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ColorSelector({ selectedCar, onColorSelect }: any) {
+  // 2. no-self-assign (ESLint)
+  // This rule disallows assignments where both sides are exactly the same.
+  // Solution: Avoid assigning a variable to itself.
+  let selectedColor = "Red";
+  selectedColor = selectedColor;
+
+  return (
+    <div>
+      <h2>
+        Select a Color for your {selectedCar.make} {selectedCar.model}
+      </h2>
+      <div>
+        <button onClick={() => onColorSelect(selectedColor)}>
+          {selectedColor}
+        </button>
+        <button onClick={() => onColorSelect("Blue")}>Blue</button>
+        <button onClick={() => onColorSelect("Green")}>Green</button>
+      </div>
+    </div>
+  );
+}
+
+function CarPreview({ selectedCar, selectedColor }: any) {
+  // 3. no-dupe-args (ESLint)
+  // This rule disallows duplicate arguments in function definitions.
+  // Solution: Avoid having duplicate arguments in function definitions.
+  function handleImageLoaded(
+    _: React.SyntheticEvent<HTMLImageElement>,
+    __: string
+  ) {
+    // This function has a duplicate argument '_'
+  }
+
+  return (
+    <div>
+      <h2>
+        Your selected car is a {selectedCar.make} {selectedCar.model} painted
+        {selectedColor}.
+      </h2>
+      <Image
+        src="/image.jpg"
+        alt={`${selectedCar.make} ${selectedCar.model}`}
+        width={500}
+        height={300}
+        onLoad={(event) => handleImageLoaded(event, "additional argument")}
+      />
+    </div>
+  );
+}
+
+function App() {
+  // 3. Lack of Type Annotations (Clean Code JavaScript)
+  // Solution: Add type annotations for the state variables
+  const [selectedCar, setSelectedCar] = useState<{
+    make: string;
+    model: string;
+  } | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+
+  // 4. Inconsistent Naming Conventions (Clean Code JavaScript)
+  // Solution: Use consistent naming conventions for the functions
+  const handleCarSelect = (car: { make: string; model: string }) => {
+    setSelectedCar(car);
+    setSelectedColor(null); // Reset the selected color when a new car is chosen
+  };
+
+  const handleColorSelect = (color: string) => {
+    setSelectedColor(color);
+  };
+
+  // 5. Lack of Type Checking (Clean Code JavaScript)
+  // Solution: Add type annotations for the cars array
+  const cars: { make: string; model: string; color: string }[] = [
+    { make: "Honda", model: "Accord", color: "Blue" },
+    { make: "Toyota", model: "Camry", color: "Red" },
+    { make: "Ford", model: "Mustang", color: "Green" },
+  ];
+
+  // 4. no-unreachable (ESLint)
+  // This rule disallows unreachable code after return, throw, continue, and break statements.
+  // Solution: Ensure that there is no unreachable code in the function.
+  function handleUnreachableCode() {
+    return;
+    console.log("This code is unreachable and should be removed");
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      <div>
+        <CarSelector cars={cars} onCarSelect={handleCarSelect} />
+        {selectedCar && (
+          <ColorSelector
+            selectedCar={selectedCar}
+            onColorSelect={handleColorSelect}
+          />
+        )}
+        {selectedCar && selectedColor && (
+          <CarPreview selectedCar={selectedCar} selectedColor={selectedColor} />
+        )}
       </div>
     </main>
   );
+}
+
+// 6. Avoid Magic Numbers (Clean Code JavaScript)
+// Solution: Use a constant for the z-index value
+const HEADER_Z_INDEX = 100;
+
+export default function Home() {
+  // 5. no-unused-vars (ESLint)
+  // This rule disallows unused variables.
+  // Solution: Remove any unused variables in the code.
+  const carTest = "carTest";
+
+  return <App />;
 }
